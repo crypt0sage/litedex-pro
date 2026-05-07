@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LiteDEX — Litecoin's Premier DEX</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Tailwind config inline -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            electric: '#00D4FF',
+            'electric-dim': '#0090BB',
+            ltc: '#A6A6B0',
+            'bg-deep': '#040812',
+            'bg-card': '#080F1E',
+            'bg-glass': 'rgba(8,15,30,0.7)',
+            'border-glow': 'rgba(0,212,255,0.3)',
+          },
+          fontFamily: {
+            heading: ['Rajdhani', 'sans-serif'],
+            mono: ['Space Mono', 'monospace'],
+            body: ['Inter', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root {
+      height: 100%;
+      background: #040812;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+    }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #040812; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.3); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0,212,255,0.6); }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes orb1 {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+      33% { transform: translate(60px, -80px) scale(1.1); opacity: 0.6; }
+      66% { transform: translate(-40px, 50px) scale(0.9); opacity: 0.3; }
+    }
+    @keyframes orb2 {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+      33% { transform: translate(-70px, 60px) scale(1.2); opacity: 0.5; }
+      66% { transform: translate(50px, -40px) scale(0.8); opacity: 0.4; }
+    }
+    @keyframes orb3 {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.25; }
+      50% { transform: translate(40px, 80px) scale(1.15); opacity: 0.45; }
+    }
+    @keyframes scanline {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100vh); }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(0,212,255,0.15); }
+      50% { box-shadow: 0 0 40px rgba(0,212,255,0.35); }
+    }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-orb1 { animation: orb1 12s ease-in-out infinite; }
+    .animate-orb2 { animation: orb2 15s ease-in-out infinite; }
+    .animate-orb3 { animation: orb3 10s ease-in-out infinite; }
+    .animate-ticker { animation: ticker 30s linear infinite; }
+    .glass-card {
+      background: rgba(8,15,30,0.8);
+      border: 1px solid rgba(0,212,255,0.15);
+      box-shadow: 0 0 30px rgba(0,212,255,0.05);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .glass-card:hover {
+      border-color: rgba(0,212,255,0.3);
+      box-shadow: 0 0 40px rgba(0,212,255,0.12);
+    }
+    .glow-border {
+      border: 1px solid rgba(0,212,255,0.3);
+      box-shadow: 0 0 20px rgba(0,212,255,0.15), inset 0 0 20px rgba(0,212,255,0.03);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #00D4FF 0%, #0066CC 100%);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 30px rgba(0,212,255,0.5);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-secondary {
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.3);
+      color: #00D4FF;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      background: rgba(0,212,255,0.2);
+      box-shadow: 0 0 20px rgba(0,212,255,0.3);
+    }
+    .nav-item-active {
+      background: rgba(0,212,255,0.1);
+      border-left: 2px solid #00D4FF;
+      color: #00D4FF;
+      box-shadow: inset 0 0 20px rgba(0,212,255,0.05);
+    }
+    .scanline-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+      );
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(0,212,255,0.1);
+      border-radius: 4px;
+      height: 4px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #00D4FF;
+      box-shadow: 0 0 8px rgba(0,212,255,0.6);
+      cursor: pointer;
+    }
+    .token-input {
+      background: rgba(4,8,18,0.8);
+      border: 1px solid rgba(0,212,255,0.1);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .token-input:focus-within {
+      border-color: rgba(0,212,255,0.4);
+      box-shadow: 0 0 15px rgba(0,212,255,0.1);
+    }
+    .confidence-bar {
+      height: 4px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #00D4FF, #0066CC);
+      box-shadow: 0 0 8px rgba(0,212,255,0.5);
+    }
+  </style>
+</head>
+<body class="dark">
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>
